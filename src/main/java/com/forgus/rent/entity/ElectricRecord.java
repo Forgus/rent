@@ -18,8 +18,8 @@ public class ElectricRecord {
     @Column(name = "createDate")
     private LocalDate createDete;
 
-    @Column(name = "record")
-    private int record;
+    @Column(name = "readings")
+    private int readings;
 
     @ManyToOne
     @JoinColumn(name = "roomId")
@@ -41,12 +41,12 @@ public class ElectricRecord {
         this.createDete = createDete;
     }
 
-    public int getRecord() {
-        return record;
+    public int getReadings() {
+        return readings;
     }
 
-    public void setRecord(int record) {
-        this.record = record;
+    public void setReadings(int readings) {
+        this.readings = readings;
     }
 
     public Room getRoom() {

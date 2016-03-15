@@ -1,6 +1,7 @@
 package com.forgus.rent.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,8 +15,18 @@ public class Room {
     @GeneratedValue
     private Long id;
 
+    private String name;
+
     @OneToMany(mappedBy = "room",cascade = CascadeType.ALL)
     private Set<ElectricRecord> records;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
@@ -31,5 +42,13 @@ public class Room {
 
     public void setRecords(Set<ElectricRecord> records) {
         this.records = records;
+    }
+
+    public void addRecord(ElectricRecord record) {
+        if(records==null || records.size()==0) {
+            records = new HashSet<>();
+        }
+        record.setRoom(this);
+        records.add(record);
     }
 }

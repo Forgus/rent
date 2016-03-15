@@ -3,6 +3,7 @@ package com.forgus.rent.config;
 import com.forgus.rent.util.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -32,74 +33,33 @@ import java.util.List;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {
-        "com.forgus.rent"
-})
+@ComponentScan("com.forgus.rent")
 @Import(ServiceConfig.class)
-public class MVCConfig extends WebMvcConfigurerAdapter {
+public class MVCConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     private final String UTF8 = "UTF-8";
 
-    /**
-     * 静态资源处理,加在这里
-     */
-    private static String[] STATIC_RESOURCE_PATH = {
-            "assets",
-            "views"
-    };
-
     @Autowired
     private Environment environment;
-    @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
-    private ViewResolver htmlViewResolver;
-    @Autowired
-    private ViewResolver javascriptViewResolver;
 
-    /**
-     * 静态资源设置
-     *
-     * @param registry
-     */
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
-        for (String resourcePath : MVCConfig.STATIC_RESOURCE_PATH) {
-            registry.addResourceHandler("/" + resourcePath + "/**").addResourceLocations("/" + resourcePath + "/");
-        }
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
-    /**
-     * 注册视图解析器
-     *
-     * @param registry
-     */
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-        registry.viewResolver(htmlViewResolver);
-        registry.viewResolver(javascriptViewResolver);
-    }
 
-    /**
-     * html解析器
-     *
-     * @return
-     */
     @Bean
     public ViewResolver htmlViewResolver() {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(templateEngine(htmlTemplateResolver()));
-        resolver.setOrder(1);
         resolver.setContentType("text/html;charset=utf-8");
         resolver.setCharacterEncoding(UTF8);
+        resolver.setViewNames(ArrayUtil.array("*.html"));
         return resolver;
     }
 
-    /**
-     * javascript 解析器
-     * @return
-     */
+
     @Bean
     public ViewResolver javascriptViewResolver() {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
@@ -116,11 +76,10 @@ public class MVCConfig extends WebMvcConfigurerAdapter {
     }
     private ITemplateResolver htmlTemplateResolver() {
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-        resolver.setPrefix("/views/");
-        resolver.setSuffix(".html");
+        resolver.setPrefix("/WEB-INF/templates/");
         resolver.setApplicationContext(applicationContext);
         resolver.setCharacterEncoding(UTF8);
-        //设置缓存
+        resolver.setTemplateMode(TemplateMode.HTML);
         if (environment.acceptsProfiles("development")) {
             resolver.setCacheable(false);
         }
@@ -128,10 +87,10 @@ public class MVCConfig extends WebMvcConfigurerAdapter {
     }
     private ITemplateResolver javascriptTemplateResolver() {
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setPrefix("/WEB-INF/js/");
         resolver.setApplicationContext(applicationContext);
         resolver.setCharacterEncoding(UTF8);
         resolver.setTemplateMode(TemplateMode.JAVASCRIPT);
-        //设置缓存
         if (environment.acceptsProfiles("development")) {
             resolver.setCacheable(false);
         }
@@ -148,7 +107,6 @@ public class MVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-
         converter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON));
         converters.add(converter);
     }
