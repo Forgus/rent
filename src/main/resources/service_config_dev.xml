@@ -14,9 +14,9 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://120.24.243.104:3307/rent?useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;rewriteBatchedStatements=TRUE"/>
-        <property name="username" value="dbuser"/>
-        <property name="password" value="ddbbuusseerr"/>
+        <property name="url" value="jdbc:mysql://120.24.40.51:3306/rent?useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;rewriteBatchedStatements=TRUE"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
