@@ -1,8 +1,9 @@
 package com.forgus.rent.controller;
 
-import com.forgus.rent.entity.ElectricRecord;
-import com.forgus.rent.entity.Room;
-import com.forgus.rent.repository.ElectricRecordRepository;
+import com.forgus.rent.entity.Ammeter;
+import com.forgus.rent.entity.ElecRecord;
+import com.forgus.rent.repository.AmmeterRepository;
+import com.forgus.rent.repository.ElecRecordRepository;
 import com.forgus.rent.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,26 +24,28 @@ import java.util.List;
 public class ElectricRecordController {
 
     @Autowired
-    private ElectricRecordRepository recordRepository;
+    private ElecRecordRepository recordRepository;
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private AmmeterRepository ammeterRepository;
 
     @RequestMapping(value = "",method = RequestMethod.GET)
-    public String findRecords(@RequestParam(required = false)Long roomId,Model model) {
-        List<ElectricRecord> records = roomId==null ? recordRepository.findAll() : recordRepository.findByRoom_Id(roomId);
+    public String findRecords(@RequestParam(required = false)Long ammeterId,Model model) {
+        List<ElecRecord> records = ammeterId==null ? recordRepository.findAll() : recordRepository.findByAmmeter_Id(ammeterId);
         model.addAttribute("records",records);
         return "recordList.html";
     }
 
     @RequestMapping(value = "",method = RequestMethod.POST)
     public String createNewRecord(Integer readings,
-                                  Long roomId) {
-        Room room = roomRepository.findOne(roomId);
-        ElectricRecord record = new ElectricRecord();
-        record.setCreateDete(LocalDate.now());
+                                  Long ammeterId) {
+        Ammeter ammeter = ammeterRepository.findOne(ammeterId);
+        ElecRecord record = new ElecRecord();
+        record.setCreateDate(LocalDate.now());
         record.setReadings(readings);
-        record.setRoom(room);
+        record.setAmmeter(ammeter);
         recordRepository.save(record);
-        return "redirect:/records?roomId="+roomId;
+        return "redirect:/records?ammeterId="+ammeterId;
     }
 }
